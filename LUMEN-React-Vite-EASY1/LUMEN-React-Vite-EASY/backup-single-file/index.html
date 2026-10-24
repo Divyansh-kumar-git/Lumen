@@ -1,0 +1,1803 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070a14" />
+  <meta name="description" content="LUMEN turns any new skill into a personalized six-step roadmap, one clear next action, and visible progress." />
+  <title>LUMEN — AI Skill Constellation</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23070a14'/%3E%3Cpath d='M14 45 27 18l11 24 12-19' fill='none' stroke='%238df3c8' stroke-width='3'/%3E%3Ccircle cx='27' cy='18' r='5' fill='%23fff'/%3E%3Ccircle cx='38' cy='42' r='5' fill='%237aa2ff'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070a14;
+      --bg-2: #0a0f1e;
+      --panel: rgba(17, 23, 42, 0.88);
+      --panel-solid: #11172a;
+      --panel-soft: rgba(255, 255, 255, 0.045);
+      --text: #f6f8ff;
+      --muted: #b4bed7;
+      --faint: #7f89a8;
+      --line: rgba(255, 255, 255, 0.13);
+      --line-strong: rgba(255, 255, 255, 0.24);
+      --accent: #8df3c8;
+      --accent-2: #8eb2ff;
+      --accent-3: #ffd47e;
+      --danger: #ff9bad;
+      --focus: #ffe171;
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+      --shadow-soft: 0 14px 36px rgba(0, 0, 0, 0.24);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --max: 1180px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.high-contrast {
+      --bg: #000;
+      --bg-2: #000;
+      --panel: #050505;
+      --panel-solid: #000;
+      --panel-soft: #0d0d0d;
+      --text: #fff;
+      --muted: #f0f0f0;
+      --faint: #d7d7d7;
+      --line: rgba(255, 255, 255, 0.62);
+      --line-strong: #fff;
+      --accent: #00ffc3;
+      --accent-2: #9fc5ff;
+      --accent-3: #ffe600;
+      --focus: #ffe600;
+      --shadow: none;
+      --shadow-soft: none;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        radial-gradient(900px 600px at 12% -10%, rgba(87, 134, 255, 0.24), transparent 62%),
+        radial-gradient(760px 520px at 100% 8%, rgba(141, 243, 200, 0.14), transparent 60%),
+        radial-gradient(820px 620px at 50% 110%, rgba(155, 105, 255, 0.16), transparent 62%),
+        linear-gradient(180deg, var(--bg), var(--bg-2) 55%, var(--bg));
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.52;
+      background-image:
+        radial-gradient(circle at 8% 22%, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 18% 72%, rgba(255,255,255,.55) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 31% 34%, rgba(141,243,200,.8) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 47% 86%, rgba(255,255,255,.6) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 61% 18%, rgba(255,255,255,.65) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 72% 62%, rgba(142,178,255,.8) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 88% 31%, rgba(255,255,255,.7) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 94% 82%, rgba(255,255,255,.45) 0 1px, transparent 1.5px);
+      background-size: 420px 420px, 520px 520px, 390px 390px, 470px 470px, 560px 560px, 410px 410px, 610px 610px, 500px 500px;
+    }
+
+    body.high-contrast::before { background: #000; }
+    body.high-contrast::after { display: none; }
+    [hidden] { display: none !important; }
+
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+    button, label, select, input { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    ::selection { background: rgba(141, 243, 200, .34); color: #fff; }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: -80px;
+      z-index: 200;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: var(--focus);
+      color: #000;
+      font-weight: 800;
+      text-decoration: none;
+      transition: top .2s ease;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0,0,0,0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    .shell { width: min(var(--max), calc(100% - 34px)); margin-inline: auto; }
+    .topbar {
+      width: min(var(--max), calc(100% - 34px));
+      margin: 0 auto;
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      position: relative;
+      z-index: 10;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; }
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(141,243,200,.12), rgba(142,178,255,.08));
+      box-shadow: inset 0 0 22px rgba(141,243,200,.08);
+      flex: 0 0 auto;
+    }
+    .brand-mark svg { width: 29px; height: 29px; }
+    .brand-copy strong { display: block; font-size: .88rem; letter-spacing: .22em; line-height: 1.15; }
+    .brand-copy span { display: block; margin-top: 3px; color: var(--faint); font-size: .67rem; letter-spacing: .13em; text-transform: uppercase; }
+    .nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: rgba(255,255,255,.045);
+      color: var(--text);
+      font-weight: 750;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.42); background: rgba(255,255,255,.08); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      color: #04120d;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), #c8ffe8);
+      box-shadow: 0 14px 36px rgba(141,243,200,.16);
+    }
+    .btn-primary:hover { box-shadow: 0 18px 42px rgba(141,243,200,.24); }
+    .btn-quiet { background: transparent; color: var(--muted); }
+    .btn-small { min-height: 38px; padding: 8px 13px; font-size: .86rem; }
+    .btn-full { width: 100%; }
+    .btn-icon { font-size: 1.05rem; line-height: 1; }
+    .high-contrast .btn-primary { background: var(--accent); box-shadow: none; }
+
+    .landing { padding: 34px 0 86px; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); gap: clamp(28px, 5vw, 66px); align-items: start; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 26px; height: 1px; background: currentColor; }
+    h1, h2, h3, p { overflow-wrap: break-word; }
+    h1 { margin: 0; max-width: 740px; font-size: clamp(2.65rem, 6.2vw, 5.4rem); line-height: .98; letter-spacing: -.055em; font-weight: 820; }
+    .hero-copy h1 .glow-word { color: var(--accent); text-shadow: 0 0 28px rgba(141,243,200,.22); }
+    .lede { max-width: 620px; margin: 24px 0 0; color: var(--muted); font-size: clamp(1.02rem, 1.6vw, 1.2rem); line-height: 1.7; }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 23px 0 24px; color: var(--faint); font-size: .88rem; }
+    .trust-row span { display: inline-flex; align-items: center; gap: 8px; }
+    .trust-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+
+    .surface {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .high-contrast .surface { backdrop-filter: none; }
+
+    .setup-card { padding: clamp(20px, 3vw, 30px); position: relative; overflow: hidden; }
+    .setup-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: .7;
+    }
+    .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 20px; }
+    .card-heading h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.02em; }
+    .card-heading p { margin: 4px 0 0; color: var(--faint); font-size: .88rem; }
+    .step-count { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; color: var(--accent); font-size: .74rem; font-weight: 800; }
+
+    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+    legend, .field-label { display: block; margin: 0 0 10px; color: var(--text); font-size: .86rem; font-weight: 800; letter-spacing: .01em; }
+    .field { margin-top: 20px; }
+    .goal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .goal-card {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      min-height: 62px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(255,255,255,.025);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .goal-card:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,.06); }
+    .goal-card[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: rgba(141,243,200,.12);
+      box-shadow: inset 0 0 0 1px rgba(141,243,200,.22), 0 0 0 3px rgba(141,243,200,.06);
+    }
+    .goal-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+    .goal-text { min-width: 0; }
+    .goal-text strong { display: block; font-size: .9rem; line-height: 1.25; }
+    .goal-text small { display: block; margin-top: 2px; color: var(--faint); font-size: .72rem; line-height: 1.25; }
+    .custom-goal-wrap { margin-top: 12px; }
+    .input, .select {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 13px;
+      background: rgba(3,6,14,.72);
+      color: var(--text);
+      outline: none;
+    }
+    .input::placeholder { color: #707a98; }
+    .input:focus, .select:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(255,225,113,.14); }
+    .select { appearance: none; padding-right: 42px; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .radio-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .radio-pill { position: relative; min-width: 0; cursor: pointer; }
+    .radio-pill input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .radio-pill span { display: flex; min-height: 44px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.03); color: var(--muted); font-size: .8rem; font-weight: 750; text-align: center; padding: 7px; }
+    .radio-pill input:checked + span { border-color: var(--accent); background: rgba(141,243,200,.12); color: var(--text); }
+    .radio-pill input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .form-actions { display: flex; align-items: center; gap: 12px; margin-top: 22px; }
+    .link-button { border: 0; padding: 8px 0; background: transparent; color: var(--muted); font-size: .84rem; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+    .link-button:hover { color: var(--text); }
+    .form-note { margin: 12px 0 0; color: var(--faint); font-size: .75rem; text-align: center; }
+    .validation { margin: 12px 0 -4px; color: var(--danger); font-size: .84rem; font-weight: 750; }
+
+    details.engine-note { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); }
+    details.engine-note summary { cursor: pointer; color: var(--text); font-size: .84rem; font-weight: 750; }
+    details.engine-note p { margin: 9px 0 0; font-size: .79rem; }
+
+    .visual-card { position: sticky; top: 18px; padding: 22px; min-height: 520px; overflow: hidden; }
+    .visual-card::after { content: ""; position: absolute; width: 320px; height: 320px; right: -120px; bottom: -150px; border-radius: 50%; border: 1px solid rgba(141,243,200,.12); box-shadow: 0 0 0 42px rgba(141,243,200,.02), 0 0 0 84px rgba(141,243,200,.015); }
+    .visual-top { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .visual-top h2 { margin: 0; font-size: 1rem; }
+    .visual-top span { color: var(--faint); font-size: .75rem; }
+    .constellation-hero { width: 100%; height: 330px; display: block; position: relative; z-index: 1; margin-top: 8px; }
+    .visual-stat-row { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: -2px; }
+    .mini-stat { border: 1px solid var(--line); border-radius: 15px; padding: 13px; background: rgba(255,255,255,.035); }
+    .mini-stat strong { display: block; color: var(--accent); font-size: 1.15rem; }
+    .mini-stat span { color: var(--faint); font-size: .73rem; }
+    .problem-callout { position: relative; z-index: 2; margin-top: 14px; padding: 14px 16px; border-left: 3px solid var(--accent-3); border-radius: 0 13px 13px 0; background: rgba(255,212,126,.07); color: var(--muted); font-size: .83rem; }
+    .problem-callout strong { color: var(--text); }
+
+    .workspace { padding: 28px 0 90px; }
+    .workspace-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+    .workspace-header h1 { max-width: 780px; font-size: clamp(2.2rem, 4.4vw, 4rem); }
+    .workspace-header .lede { margin-top: 13px; font-size: 1rem; }
+    .workspace-actions { display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+    .path-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 22px; align-items: start; }
+    .path-column { min-width: 0; display: grid; gap: 20px; }
+
+    .next-card {
+      padding: clamp(20px, 3vw, 28px);
+      border: 1px solid rgba(141,243,200,.34);
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(500px 240px at 100% 0%, rgba(141,243,200,.14), transparent 65%),
+        var(--panel);
+      box-shadow: var(--shadow-soft);
+    }
+    .next-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; }
+    .next-label { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: .72rem; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .next-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 16px currentColor; }
+    .next-card h2 { margin: 11px 0 7px; font-size: clamp(1.45rem, 2.5vw, 2rem); letter-spacing: -.03em; }
+    .next-card p { margin: 0; color: var(--muted); }
+    .next-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 15px; color: var(--faint); font-size: .8rem; }
+    .next-meta span::before { content: "•"; color: var(--accent); margin-right: 7px; }
+    .next-orb { width: 104px; height: 104px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(141,243,200,.38); background: radial-gradient(circle, rgba(141,243,200,.2), rgba(141,243,200,.04) 55%, transparent 60%); box-shadow: 0 0 50px rgba(141,243,200,.14), inset 0 0 30px rgba(141,243,200,.08); }
+    .next-orb strong { font-size: 2rem; color: var(--accent); }
+    .next-orb small { display: block; color: var(--faint); font-size: .67rem; letter-spacing: .12em; text-transform: uppercase; }
+    .next-card.complete { border-color: rgba(255,212,126,.48); }
+    .next-card.complete .next-label, .next-card.complete .next-orb strong { color: var(--accent-3); }
+
+    .path-panel { padding: clamp(18px, 2.5vw, 26px); }
+    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .section-heading h2 { margin: 0; font-size: 1.16rem; }
+    .section-heading p { margin: 5px 0 0; color: var(--faint); font-size: .82rem; }
+    .path-key { display: flex; gap: 12px; flex-wrap: wrap; color: var(--faint); font-size: .72rem; }
+    .path-key span { display: inline-flex; align-items: center; gap: 6px; }
+    .key-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--line-strong); }
+    .key-dot.done { background: var(--accent); border-color: var(--accent); }
+    .key-dot.current { border-color: var(--accent-3); box-shadow: 0 0 0 4px rgba(255,212,126,.12); }
+    .key-dot.next { background: rgba(255,255,255,.12); }
+
+    .step-list { position: relative; list-style: none; padding: 0; margin: 0; }
+    .step-list::before { content: ""; position: absolute; left: 25px; top: 30px; bottom: 30px; width: 2px; background: linear-gradient(var(--accent), rgba(141,243,200,.15) 30%, var(--line)); }
+    .step-item { position: relative; padding-left: 68px; margin-bottom: 12px; }
+    .step-item:last-child { margin-bottom: 0; }
+    .step-node {
+      position: absolute;
+      left: 3px;
+      top: 19px;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: var(--panel-solid);
+      color: var(--muted);
+      font-weight: 900;
+      z-index: 2;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .step-item.complete .step-node { border-color: var(--accent); background: rgba(141,243,200,.16); color: var(--accent); }
+    .step-item.current .step-node { border-color: var(--accent-3); color: var(--accent-3); box-shadow: 0 0 0 7px rgba(255,212,126,.1), 0 0 28px rgba(255,212,126,.16); transform: scale(1.06); }
+    .step-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: rgba(255,255,255,.025);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .step-card:hover { transform: translateX(3px); border-color: var(--line-strong); background: rgba(255,255,255,.05); }
+    .step-item.current .step-card { border-color: rgba(255,212,126,.45); background: rgba(255,212,126,.055); }
+    .step-item.selected .step-card { box-shadow: inset 3px 0 0 var(--accent-2); }
+    .step-card strong { display: block; font-size: .98rem; }
+    .step-card small { display: block; margin-top: 3px; color: var(--muted); font-size: .79rem; line-height: 1.45; }
+    .status-chip { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; color: var(--faint); font-size: .68rem; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+    .step-item.complete .status-chip { color: var(--accent); border-color: rgba(141,243,200,.4); }
+    .step-item.current .status-chip { color: var(--accent-3); border-color: rgba(255,212,126,.4); }
+
+    .insight-column { display: grid; gap: 16px; min-width: 0; }
+    .side-card { padding: 20px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); box-shadow: var(--shadow-soft); }
+    .side-card h2, .side-card h3 { margin: 0; font-size: 1.03rem; letter-spacing: -.01em; }
+    .side-card-sub { margin: 4px 0 16px; color: var(--faint); font-size: .78rem; }
+    .detail-step-label { color: var(--accent); font-size: .69rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+    .detail-title { margin: 7px 0 8px !important; font-size: 1.24rem !important; }
+    .detail-why { margin: 0 0 14px; color: var(--muted); font-size: .84rem; }
+    .detail-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .72rem; }
+    .action-list { display: grid; gap: 9px; padding: 0; margin: 0; list-style: none; }
+    .action-item { position: relative; }
+    .action-item label { display: flex; gap: 11px; align-items: flex-start; padding: 11px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.025); color: var(--muted); font-size: .82rem; cursor: pointer; }
+    .action-item label:hover { border-color: var(--line-strong); color: var(--text); }
+    .action-item input { width: 19px; height: 19px; margin: 1px 0 0; accent-color: var(--accent); flex: 0 0 auto; }
+    .action-item input:checked + span { color: var(--faint); text-decoration: line-through; }
+    .detail-complete { margin-top: 13px; padding: 11px 12px; border-radius: 12px; background: rgba(141,243,200,.1); color: var(--accent); font-size: .8rem; font-weight: 800; }
+
+    .progress-card { display: grid; grid-template-columns: 104px 1fr; gap: 18px; align-items: center; }
+    .progress-ring { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--accent) calc(var(--progress) * 1%), rgba(255,255,255,.08) 0); box-shadow: 0 0 38px rgba(141,243,200,.08); }
+    .progress-ring-inner { width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; background: var(--panel-solid); color: var(--text); text-align: center; }
+    .progress-ring-inner strong { font-size: 1.3rem; line-height: 1; }
+    .progress-ring-inner small { display: block; color: var(--faint); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; }
+    .progress-copy p { margin: 5px 0 0; color: var(--muted); font-size: .82rem; }
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 15px; }
+    .stat { border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; text-align: center; }
+    .stat strong { display: block; font-size: 1rem; }
+    .stat span { color: var(--faint); font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; }
+
+    .streak-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .streak-head strong { color: var(--accent-3); font-size: 1.45rem; }
+    .week-dots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; margin-top: 14px; }
+    .day { text-align: center; }
+    .day-dot { width: 100%; aspect-ratio: 1; max-width: 34px; margin: 0 auto 6px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; color: var(--faint); font-size: .7rem; }
+    .day.active .day-dot { border-color: var(--accent-3); background: rgba(255,212,126,.14); color: var(--accent-3); }
+    .day span { color: var(--faint); font-size: .65rem; }
+    .streak-note { margin: 10px 0 0; color: var(--faint); font-size: .74rem; }
+
+    .badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .badge { padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.025); color: var(--faint); font-size: .72rem; }
+    .badge strong { display: block; color: var(--muted); font-size: .76rem; }
+    .badge.unlocked { border-color: rgba(255,212,126,.38); background: rgba(255,212,126,.07); color: var(--muted); }
+    .badge.unlocked strong { color: var(--accent-3); }
+
+    .logic-list { display: grid; gap: 8px; margin-top: 13px; }
+    .logic-item { display: flex; align-items: flex-start; gap: 9px; color: var(--muted); font-size: .78rem; }
+    .logic-item::before { content: "✓"; color: var(--accent); font-weight: 900; }
+
+    footer { border-top: 1px solid var(--line); padding: 24px 0 34px; color: var(--faint); font-size: .76rem; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .footer-inner strong { color: var(--muted); }
+
+    .toast { position: fixed; left: 50%; bottom: 24px; z-index: 90; transform: translate(-50%, 18px); max-width: min(440px, calc(100% - 30px)); padding: 12px 16px; border: 1px solid var(--line-strong); border-radius: 14px; background: #11182b; color: var(--text); box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; font-size: .86rem; font-weight: 700; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .high-contrast .toast { background: #000; }
+
+    .demo-panel { position: fixed; z-index: 100; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(580px, calc(100% - 28px)); padding: 16px; border: 1px solid rgba(255,212,126,.5); border-radius: 20px; background: rgba(10,13,25,.96); box-shadow: 0 22px 70px rgba(0,0,0,.52), 0 0 0 1px rgba(255,212,126,.08); backdrop-filter: blur(16px); }
+    .high-contrast .demo-panel { background: #000; backdrop-filter: none; }
+    .demo-progress-track { height: 5px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.1); }
+    .demo-progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-3)); transition: width .45s linear; }
+    .demo-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; margin-top: 13px; }
+    .demo-kicker { color: var(--accent-3); font-size: .65rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+    .demo-panel h2 { margin: 4px 0 5px; font-size: 1rem; }
+    .demo-panel p { margin: 0; color: var(--muted); font-size: .83rem; }
+    .demo-timer { color: var(--accent-3); font-variant-numeric: tabular-nums; font-weight: 900; }
+    .demo-controls { display: flex; justify-content: flex-end; gap: 8px; margin-top: 13px; flex-wrap: wrap; }
+    .demo-spotlight { outline: 3px solid var(--focus) !important; outline-offset: 5px !important; box-shadow: 0 0 0 10px rgba(255,225,113,.1), 0 0 40px rgba(255,225,113,.18) !important; position: relative; z-index: 4; }
+
+    .celebration { position: fixed; inset: 0; z-index: 120; pointer-events: none; overflow: hidden; }
+    .spark { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: spark-fly 900ms ease-out forwards; }
+    @keyframes spark-fly { to { transform: translate(var(--tx), var(--ty)) scale(.2) rotate(180deg); opacity: 0; } }
+    @keyframes pulse-ring { 0%,100% { box-shadow: 0 0 0 7px rgba(255,212,126,.1), 0 0 28px rgba(255,212,126,.16); } 50% { box-shadow: 0 0 0 11px rgba(255,212,126,.04), 0 0 38px rgba(255,212,126,.2); } }
+    .step-item.current .step-node { animation: pulse-ring 2.6s ease-in-out infinite; }
+
+    @media (max-width: 980px) {
+      .hero-grid, .path-layout { grid-template-columns: 1fr; }
+      .visual-card { position: relative; top: auto; min-height: 0; }
+      .workspace-header { align-items: flex-start; flex-direction: column; }
+      .workspace-actions { justify-content: flex-start; }
+      .insight-column { grid-template-columns: 1fr 1fr; }
+      .detail-card { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 680px) {
+      .shell, .topbar { width: min(100% - 22px, var(--max)); }
+      .topbar { align-items: flex-start; flex-direction: column; padding: 18px 0 10px; }
+      .nav-actions { justify-content: flex-start; width: 100%; }
+      .nav-actions .btn { flex: 1 1 auto; }
+      .landing { padding-top: 20px; }
+      .hero-grid { gap: 28px; }
+      h1 { font-size: clamp(2.4rem, 12vw, 3.8rem); }
+      .goal-grid, .form-grid, .insight-column { grid-template-columns: 1fr; }
+      .detail-card { grid-column: auto; }
+      .radio-row { grid-template-columns: 1fr; }
+      .form-actions { align-items: stretch; flex-direction: column; }
+      .next-grid { grid-template-columns: 1fr; }
+      .next-orb { width: 82px; height: 82px; }
+      .step-item { padding-left: 57px; }
+      .step-list::before { left: 22px; }
+      .step-node { width: 42px; height: 42px; left: 2px; }
+      .step-card { align-items: flex-start; flex-direction: column; }
+      .progress-card { grid-template-columns: 90px 1fr; }
+      .progress-ring { width: 90px; height: 90px; }
+      .progress-ring-inner { width: 68px; height: 68px; }
+      .constellation-hero { height: 285px; }
+      .demo-panel { bottom: 10px; padding: 14px; }
+      .demo-controls .btn { flex: 1 1 auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div id="srAnnouncer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <header class="topbar" aria-label="Site header">
+    <a class="brand" href="#" id="brandHome" aria-label="LUMEN home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 44 44" fill="none">
+          <path d="M7 33 18 9l10 21 9-13" stroke="currentColor" stroke-width="2.2" opacity=".8"/>
+          <circle cx="18" cy="9" r="4" fill="#fff"/>
+          <circle cx="28" cy="30" r="4" fill="#8eb2ff"/>
+          <circle cx="37" cy="17" r="2.5" fill="#ffd47e"/>
+          <circle cx="7" cy="33" r="2.5" fill="#8df3c8"/>
+        </svg>
+      </span>
+      <span class="brand-copy"><strong>LUMEN</strong><span>AI skill constellation</span></span>
+    </a>
+    <nav class="nav-actions" aria-label="Prototype controls">
+      <button class="btn btn-small btn-quiet" type="button" id="contrastToggle" aria-pressed="false" title="Switch to a brighter high-contrast palette">
+        <span class="btn-icon" aria-hidden="true">◐</span><span id="contrastText">High contrast</span>
+      </button>
+      <button class="btn btn-small" type="button" id="demoButton">
+        <span class="btn-icon" aria-hidden="true">▶</span> Watch 60-sec demo
+      </button>
+      <button class="btn btn-small btn-quiet" type="button" id="resetButton" title="Clear saved progress and start again">Reset</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="landing shell" id="landing" aria-labelledby="landingTitle">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">AI-generated roadmap · guided path · visible progress</p>
+          <h1 id="landingTitle">Don’t Google <span class="glow-word">“where do I start?”</span> Follow one lit star.</h1>
+          <p class="lede">LUMEN turns any new skill into a personalized six-step constellation, a single next action, and momentum you can actually see — in under 20 seconds.</p>
+          <div class="trust-row" aria-label="Prototype benefits">
+            <span><i class="trust-dot" aria-hidden="true"></i>No signup</span>
+            <span><i class="trust-dot" aria-hidden="true"></i>No API key</span>
+            <span><i class="trust-dot" aria-hidden="true"></i>Progress saved locally</span>
+          </div>
+
+          <form class="setup-card surface" id="setupForm" novalidate>
+            <div class="card-heading">
+              <div>
+                <h2>Build your learning constellation</h2>
+                <p>Four tiny answers. One clear path.</p>
+              </div>
+              <span class="step-count">~20 sec</span>
+            </div>
+
+            <fieldset>
+              <legend>1. What do you want to learn?</legend>
+              <div class="goal-grid" id="goalGrid" aria-label="Learning goals"></div>
+              <div class="custom-goal-wrap" id="customGoalWrap" hidden>
+                <label class="sr-only" for="customGoal">Name your skill</label>
+                <input class="input" id="customGoal" name="customGoal" type="text" maxlength="60" placeholder="e.g. conversational Spanish, chess openings, 3D modelling" autocomplete="off" />
+              </div>
+            </fieldset>
+
+            <fieldset class="field">
+              <legend>2. Where are you starting?</legend>
+              <div class="radio-row" id="levelRow">
+                <label class="radio-pill"><input type="radio" name="level" value="beginner" checked /><span>Complete beginner</span></label>
+                <label class="radio-pill"><input type="radio" name="level" value="some" /><span>I know a little</span></label>
+                <label class="radio-pill"><input type="radio" name="level" value="returning" /><span>I’m restarting</span></label>
+              </div>
+            </fieldset>
+
+            <div class="form-grid">
+              <div class="field">
+                <label class="field-label" for="timeMode">3. Time you can give</label>
+                <select class="select" id="timeMode" name="timeMode">
+                  <option value="15">15 minutes / day</option>
+                  <option value="30" selected>30 minutes / day</option>
+                  <option value="60">1 hour / day</option>
+                  <option value="weekend">Weekend blocks</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label" for="styleMode">4. How you learn best</label>
+                <select class="select" id="styleMode" name="styleMode">
+                  <option value="watch" selected>Watch a short video</option>
+                  <option value="read">Read a clear guide</option>
+                  <option value="do">Try it immediately</option>
+                  <option value="listen">Listen and repeat</option>
+                </select>
+              </div>
+            </div>
+
+            <p class="validation" id="formError" role="alert" hidden></p>
+            <div class="form-actions">
+              <button class="btn btn-primary btn-full" type="submit" id="generateButton">
+                <span aria-hidden="true">✦</span> Generate my roadmap
+              </button>
+              <button class="link-button" type="button" id="sampleButton">Load a sample path</button>
+            </div>
+            <p class="form-note">Your goal and progress stay in this browser. Nothing is uploaded.</p>
+
+            <details class="engine-note">
+              <summary>How is this “AI” working offline?</summary>
+              <p>The prototype’s local Path Engine combines your goal, starting point, available time and learning style with curated skill milestones. It behaves like an AI planner but needs no API key, so the judging demo never fails because of network or billing.</p>
+            </details>
+          </form>
+        </div>
+
+        <aside class="visual-card surface" aria-labelledby="visualTitle">
+          <div class="visual-top">
+            <h2 id="visualTitle">A constellation, not a cluttered course list</h2>
+            <span>LIVE MODEL</span>
+          </div>
+          <svg class="constellation-hero" viewBox="0 0 480 330" role="img" aria-labelledby="mapSvgTitle mapSvgDesc">
+            <title id="mapSvgTitle">Example learning constellation</title>
+            <desc id="mapSvgDesc">A connected path from your goal through six steps. The first step is glowing and the later steps fade into the distance.</desc>
+            <defs>
+              <linearGradient id="pathGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#8df3c8" stop-opacity=".95"/>
+                <stop offset="55%" stop-color="#ffd47e" stop-opacity=".6"/>
+                <stop offset="100%" stop-color="#8eb2ff" stop-opacity=".15"/>
+              </linearGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <path d="M57 249 C105 248 110 203 151 193 S211 239 242 201 S298 130 329 145 S382 198 419 75" fill="none" stroke="url(#pathGradient)" stroke-width="2.5" stroke-dasharray="6 9"/>
+            <g fill="none" stroke="#8eb2ff" stroke-opacity=".14">
+              <circle cx="240" cy="165" r="116"/><circle cx="240" cy="165" r="72"/><path d="M30 165h420M240 15v300"/>
+            </g>
+            <g>
+              <circle cx="57" cy="249" r="10" fill="#8df3c8" opacity=".2"/><circle cx="57" cy="249" r="4" fill="#8df3c8" filter="url(#glow)"/>
+              <circle cx="151" cy="193" r="15" fill="#8df3c8" opacity=".13"/><circle cx="151" cy="193" r="7" fill="#8df3c8" filter="url(#glow)"/>
+              <circle cx="242" cy="201" r="8" fill="#ffd47e" opacity=".18"/><circle cx="242" cy="201" r="4" fill="#ffd47e"/>
+              <circle cx="329" cy="145" r="6" fill="#fff" opacity=".55"/>
+              <circle cx="384" cy="164" r="5" fill="#fff" opacity=".35"/>
+              <circle cx="419" cy="75" r="9" fill="#8eb2ff" opacity=".16"/><circle cx="419" cy="75" r="4" fill="#8eb2ff"/>
+            </g>
+            <g font-family="system-ui, sans-serif" font-size="12" fill="#b4bed7">
+              <text x="40" y="283">YOUR GOAL</text>
+              <text x="128" y="172" fill="#8df3c8" font-weight="700">STEP 1 · NOW</text>
+              <text x="221" y="235">STEP 2</text>
+              <text x="306" y="125">STEP 3</text>
+              <text x="397" y="48" fill="#8eb2ff">FIRST WIN</text>
+            </g>
+            <g fill="#fff" opacity=".62">
+              <circle cx="92" cy="80" r="1.5"/><circle cx="204" cy="57" r="1.2"/><circle cx="382" cy="242" r="1.4"/><circle cx="444" cy="194" r="1.2"/><circle cx="113" cy="139" r="1"/><circle cx="307" cy="278" r="1.1"/>
+            </g>
+          </svg>
+          <div class="visual-stat-row" aria-label="Roadmap model stats">
+            <div class="mini-stat"><strong>6</strong><span>clear milestones</span></div>
+            <div class="mini-stat"><strong>1</strong><span>next action</span></div>
+            <div class="mini-stat"><strong>0</strong><span>confusing menus</span></div>
+          </div>
+          <div class="problem-callout" id="problemCallout"><strong>The LUMEN rule:</strong> a learner should never wonder, “What exactly should I do next?”</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="workspace shell" id="workspace" aria-labelledby="workspaceTitle" hidden>
+      <div class="workspace-header" id="workspaceHeader">
+        <div>
+          <p class="eyebrow">Your personalized constellation</p>
+          <h1 id="workspaceTitle">Your roadmap is ready.</h1>
+          <p class="lede" id="workspaceSubtitle">Follow the glowing star. Every action moves the whole path forward.</p>
+        </div>
+        <div class="workspace-actions">
+          <button class="btn btn-small" type="button" id="newPathButton">Adjust inputs</button>
+          <button class="btn btn-small btn-primary" type="button" id="jumpNextButton">Jump to next action</button>
+        </div>
+      </div>
+
+      <div class="path-layout">
+        <div class="path-column">
+          <section class="next-card" id="nextMoveCard" aria-labelledby="nextMoveTitle">
+            <div class="next-grid">
+              <div>
+                <span class="next-label" id="nextLabel">Your next move</span>
+                <h2 id="nextMoveTitle">Open your first step</h2>
+                <p id="nextMoveText">Your first action will appear here.</p>
+                <div class="next-meta" id="nextMeta"></div>
+              </div>
+              <div class="next-orb" aria-hidden="true"><div><strong id="nextNumber">1</strong><small>Step</small></div></div>
+            </div>
+          </section>
+
+          <section class="path-panel surface" id="constellation" aria-labelledby="pathTitle">
+            <div class="section-heading">
+              <div>
+                <h2 id="pathTitle">The guided path</h2>
+                <p>Select any star to view its exact actions. You are never locked out.</p>
+              </div>
+              <div class="path-key" aria-label="Path status key">
+                <span><i class="key-dot done" aria-hidden="true"></i>Done</span>
+                <span><i class="key-dot current" aria-hidden="true"></i>Now</span>
+                <span><i class="key-dot next" aria-hidden="true"></i>Next</span>
+              </div>
+            </div>
+            <ol class="step-list" id="stepList"></ol>
+          </section>
+        </div>
+
+        <aside class="insight-column" aria-label="Progress and current step details">
+          <section class="side-card detail-card" id="stepDetail" aria-labelledby="detailTitle"></section>
+
+          <section class="side-card" id="progressCard" aria-labelledby="progressTitle">
+            <h2 id="progressTitle">Momentum</h2>
+            <p class="side-card-sub">Progress is counted from completed actions, not vague page visits.</p>
+            <div class="progress-card">
+              <div class="progress-ring" id="progressRing" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressTitle">
+                <div class="progress-ring-inner"><div><strong id="progressPercent">0%</strong><small>complete</small></div></div>
+              </div>
+              <div class="progress-copy">
+                <p id="progressMessage">Complete one small action to light the path.</p>
+                <div class="stat-row">
+                  <div class="stat"><strong id="stepsDone">0/6</strong><span>Steps</span></div>
+                  <div class="stat"><strong id="xpValue">0</strong><span>XP</span></div>
+                  <div class="stat"><strong id="actionsDone">0</strong><span>Actions</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-card" id="streakCard" aria-labelledby="streakTitle">
+            <div class="streak-head"><div><h2 id="streakTitle">Learning streak</h2><p class="side-card-sub">Small daily returns beat heroic cramming.</p></div><strong id="streakValue">0</strong></div>
+            <div class="week-dots" id="weekDots" aria-label="Activity in the last seven days"></div>
+            <p class="streak-note" id="streakNote">Finish one action today to spark your streak.</p>
+          </section>
+
+          <section class="side-card" id="badgeCard" aria-labelledby="badgeTitle">
+            <h2 id="badgeTitle">Rewards</h2>
+            <p class="side-card-sub">Badges make effort feel visible without adding clutter.</p>
+            <div class="badge-grid" id="badgeGrid"></div>
+          </section>
+
+          <section class="side-card" id="logicCard" aria-labelledby="logicTitle">
+            <h2 id="logicTitle">Why this path?</h2>
+            <p class="side-card-sub">Personalized live from your four answers.</p>
+            <div class="logic-list" id="logicList"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span><strong>LUMEN</strong> — a working hackathon prototype for AI-powered learning experiences.</span>
+      <span>Offline Path Engine · accessible by design · local browser storage</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <section class="demo-panel" id="demoPanel" role="region" aria-label="Guided 60-second demo" hidden>
+    <div class="demo-progress-track" aria-hidden="true"><div class="demo-progress-fill" id="demoProgressFill"></div></div>
+    <div class="demo-row">
+      <div>
+        <div class="demo-kicker" id="demoKicker">60-second judge demo</div>
+        <h2 id="demoTitle">Ready to begin</h2>
+        <p id="demoCaption">Press play to watch one skill go from confusion to a confident first step.</p>
+      </div>
+      <div class="demo-timer" id="demoTimer" aria-label="Time remaining">1:00</div>
+    </div>
+    <div class="demo-controls">
+      <button class="btn btn-small btn-quiet" type="button" id="demoPause">Pause</button>
+      <button class="btn btn-small btn-quiet" type="button" id="demoNext">Skip beat</button>
+      <button class="btn btn-small btn-quiet" type="button" id="demoExit">Exit</button>
+      <button class="btn btn-small btn-primary" type="button" id="demoOwnPath" hidden>Build my own path</button>
+    </div>
+  </section>
+
+  <div class="celebration" id="celebration" aria-hidden="true"></div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "lumen-skill-constellation-v1";
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const GOALS = [
+      {
+        key: "web", label: "Build websites", hint: "HTML, CSS & JavaScript", icon: "WEB",
+        name: "web development", outcome: "publish a small responsive web page",
+        milestones: [
+          { title: "Map the web", topic: "how HTML, CSS and JavaScript work together", practice: "sketch one simple profile page with a heading, image and button", checkpoint: "You can name what each of the three languages controls.", why: "A tiny mental model prevents tutorial overload." },
+          { title: "Shape a page", topic: "HTML structure and semantic tags", practice: "write the page heading, two sections and one call-to-action", checkpoint: "Your page makes sense with CSS switched off.", why: "Structure first means every later style has a clear home." },
+          { title: "Style with confidence", topic: "CSS layout with flexbox and spacing", practice: "add a readable layout, one accent color and mobile-friendly spacing", checkpoint: "Your page stays usable on a narrow screen.", why: "Visual progress builds motivation immediately." },
+          { title: "Add one interaction", topic: "simple JavaScript events and state", practice: "make the button reveal a short success message", checkpoint: "A real click changes something on the page.", why: "One interaction teaches cause and effect without a huge app." },
+          { title: "Build your first win", topic: "turning a tutorial into your own mini project", practice: "replace the sample text with your own story and improve one detail", checkpoint: "The page feels like yours, not a copied exercise.", why: "Personal projects turn information into usable skill." },
+          { title: "Share and reflect", topic: "publishing a basic page and explaining your choices", practice: "share a screenshot or link and write three things you learned", checkpoint: "You can explain your first project in under a minute.", why: "Explaining the work closes the learning loop." }
+        ]
+      },
+      {
+        key: "data", label: "Analyze data", hint: "Find a story in numbers", icon: "DATA",
+        name: "data analysis", outcome: "turn a small dataset into one clear insight",
+        milestones: [
+          { title: "Frame one question", topic: "how to turn curiosity into an answerable data question", practice: "write one question about a topic you care about", checkpoint: "Your question has a clear subject and measurable comparison.", why: "A focused question stops endless spreadsheet wandering." },
+          { title: "Meet your dataset", topic: "rows, columns, data types and missing values", practice: "download or copy a small 20-row dataset and label each column", checkpoint: "You know what one row represents.", why: "Understanding the unit of data prevents wrong conclusions." },
+          { title: "Clean the noise", topic: "fixing blanks, duplicates and inconsistent labels", practice: "clean at least three messy cells and document what changed", checkpoint: "Someone else can trust your cleaned sheet.", why: "Simple cleaning builds trust in every result that follows." },
+          { title: "Make one chart", topic: "choosing a chart that matches your question", practice: "create one chart and write a one-sentence caption", checkpoint: "The chart title states the insight, not just the columns.", why: "A visual makes patterns obvious to you and your audience." },
+          { title: "Explain the insight", topic: "separating observation, interpretation and action", practice: "write one observation, one likely reason and one next step", checkpoint: "You do not claim more than the data supports.", why: "Clear thinking matters more than complex formulas at the start." },
+          { title: "Publish a mini report", topic: "sharing a simple data story", practice: "combine your chart and three short findings into one page", checkpoint: "A busy person can understand your conclusion in 30 seconds.", why: "A shareable result proves the skill is real." }
+        ]
+      },
+      {
+        key: "speaking", label: "Speak confidently", hint: "Tell a clear story", icon: "TALK",
+        name: "public speaking", outcome: "deliver a clear two-minute talk",
+        milestones: [
+          { title: "Choose one message", topic: "finding the single point your audience should remember", practice: "finish the sentence: ‘By the end, my audience will understand…’", checkpoint: "Your message fits in one short sentence.", why: "Clarity starts before slides or performance tricks." },
+          { title: "Build three beats", topic: "a simple opening, middle and close", practice: "write one hook, one example and one closing line", checkpoint: "Your talk has a beginning, a point and a finish.", why: "A three-beat structure is easy to remember under pressure." },
+          { title: "Rehearse out loud", topic: "turning written notes into spoken language", practice: "say the talk twice to a timer without rewriting it", checkpoint: "You can finish without reading every word.", why: "Speaking is a physical skill; the mouth needs practice too." },
+          { title: "Tune your delivery", topic: "pace, pauses and eye contact", practice: "record one take and mark one place to pause", checkpoint: "Your key message is easier to hear than before.", why: "Small delivery changes create a big confidence lift." },
+          { title: "Get safe feedback", topic: "asking for one specific improvement", practice: "share your recording with one trusted person and ask one question", checkpoint: "You have one actionable note, not vague criticism.", why: "Focused feedback keeps improvement manageable." },
+          { title: "Give the real talk", topic: "delivering your message to a real listener", practice: "present your two-minute talk and note what felt easier", checkpoint: "You finished and named one thing to improve next time.", why: "The first real delivery turns practice into confidence." }
+        ]
+      },
+      {
+        key: "design", label: "Design UI/UX", hint: "Create useful screens", icon: "UX",
+        name: "UI/UX design", outcome: "prototype a simple user-friendly screen",
+        milestones: [
+          { title: "Understand the user", topic: "writing a simple user goal and pain point", practice: "describe one person, their goal and one frustration", checkpoint: "Your design problem is about a person, not a feature list.", why: "Good design starts with a clear human need." },
+          { title: "Sketch the flow", topic: "turning a goal into three to four screens", practice: "draw the smallest route from entry to success", checkpoint: "Each screen has one obvious purpose.", why: "A simple flow prevents beautiful but confusing interfaces." },
+          { title: "Wireframe one screen", topic: "hierarchy, spacing and calls to action", practice: "make a grayscale layout with one primary action", checkpoint: "The most important element is obvious in five seconds.", why: "Hierarchy is the fastest usability upgrade." },
+          { title: "Add a visual system", topic: "color, type and consistent components", practice: "choose two colors, two font sizes and one button style", checkpoint: "Your choices are consistent across the screen.", why: "Constraints make design calmer and more accessible." },
+          { title: "Prototype the click", topic: "connecting screens into a testable interaction", practice: "link your primary button to the success state", checkpoint: "Someone can click through without your explanation.", why: "An interactive prototype exposes confusion early." },
+          { title: "Test and improve", topic: "running a five-minute usability test", practice: "watch one person use it and change one confusing detail", checkpoint: "You can name the problem you fixed and why.", why: "Feedback turns guesses into evidence." }
+        ]
+      },
+      {
+        key: "python", label: "Learn Python", hint: "Automate a small task", icon: "PY",
+        name: "Python", outcome: "write a small script that solves a real problem",
+        milestones: [
+          { title: "Set up your lab", topic: "where Python code runs and how to print output", practice: "run a script that prints your name and one goal", checkpoint: "You can edit, run and rerun a file confidently.", why: "A reliable setup removes the first technical roadblock." },
+          { title: "Speak in variables", topic: "variables, strings, numbers and basic input", practice: "store three facts about your day and print a sentence", checkpoint: "You can predict what each print statement shows.", why: "Variables are the vocabulary of every program." },
+          { title: "Make decisions", topic: "conditionals and comparisons", practice: "write a tiny chooser that gives different advice by time of day", checkpoint: "Different inputs reliably produce different outputs.", why: "Logic makes your script feel useful, not static." },
+          { title: "Repeat with loops", topic: "processing a list without copying code", practice: "turn a five-item list into five formatted lines", checkpoint: "Adding a sixth item needs no new code.", why: "Loops reveal the leverage of programming." },
+          { title: "Build a mini tool", topic: "combining inputs, logic and output", practice: "create a small calculator, habit checker or file renamer", checkpoint: "The tool solves one real annoyance for you.", why: "A personal use case makes the learning stick." },
+          { title: "Explain your script", topic: "comments, naming and simple debugging", practice: "add three helpful comments and fix one broken test case", checkpoint: "A friend can understand the script’s purpose.", why: "Readable code is the bridge from beginner to collaborator." }
+        ]
+      },
+      {
+        key: "marketing", label: "Market online", hint: "Reach the right people", icon: "MKT",
+        name: "digital marketing", outcome: "launch one focused campaign experiment",
+        milestones: [
+          { title: "Pick one audience", topic: "defining a specific audience and problem", practice: "write one sentence describing who you help and what they need", checkpoint: "Your audience is narrower than ‘everyone’.", why: "Specificity makes every later message stronger." },
+          { title: "Shape the promise", topic: "turning features into one clear benefit", practice: "write three headlines, then keep the clearest one", checkpoint: "A stranger can tell why they should care.", why: "A clear promise is more useful than clever wording." },
+          { title: "Choose one channel", topic: "matching audience behavior to a marketing channel", practice: "pick one channel and list three places your audience already spends time", checkpoint: "Your channel choice has a reason, not a trend.", why: "Focus beats being lightly present everywhere." },
+          { title: "Create one asset", topic: "making a useful post, email or landing section", practice: "publish one asset with a single call to action", checkpoint: "The next step is unmistakable.", why: "One real asset teaches more than a month of theory." },
+          { title: "Measure one signal", topic: "choosing a simple metric that matches your goal", practice: "track clicks, replies or signups for seven days", checkpoint: "Your metric directly relates to your action.", why: "Simple measurement prevents vanity-metric confusion." },
+          { title: "Improve the loop", topic: "reading results and changing one variable", practice: "rewrite the headline or call to action based on what happened", checkpoint: "You can explain what you changed and what you learned.", why: "Marketing becomes learnable when it becomes a loop." }
+        ]
+      },
+      {
+        key: "guitar", label: "Play guitar", hint: "Play your first song", icon: "GTR",
+        name: "guitar", outcome: "play a simple song with steady rhythm",
+        milestones: [
+          { title: "Know your instrument", topic: "tuning, posture and the parts of the guitar", practice: "tune the guitar and play each open string slowly", checkpoint: "Every string sounds in tune before practice.", why: "A tuned instrument makes progress sound rewarding." },
+          { title: "Learn two chords", topic: "clean fretting for two beginner chords", practice: "play each chord five times and fix buzzing strings", checkpoint: "Both chords ring clearly at least three times in a row.", why: "Two clean chords unlock dozens of songs." },
+          { title: "Switch smoothly", topic: "moving between chords without stopping", practice: "use a one-minute timer and count clean switches", checkpoint: "Your beat does not completely stop during a switch.", why: "Chord changes are the real first milestone." },
+          { title: "Add a rhythm", topic: "simple down-strums and counting", practice: "strum four beats per chord while counting out loud", checkpoint: "Your hand keeps time even when a chord is imperfect.", why: "Rhythm makes simple chords feel like music." },
+          { title: "Play a first song", topic: "putting chords, rhythm and structure together", practice: "play a two-chord version of a song from start to finish", checkpoint: "You finish without restarting after a mistake.", why: "Finishing builds more confidence than perfection." },
+          { title: "Record and repeat", topic: "listening for one improvement", practice: "record one take and choose the next small fix", checkpoint: "You know exactly what to practice tomorrow.", why: "Feedback closes the loop and makes practice purposeful." }
+        ]
+      },
+      {
+        key: "photo", label: "Take better photos", hint: "Compose with light", icon: "PH",
+        name: "photography", outcome: "create a small set of intentional photos",
+        milestones: [
+          { title: "Notice the light", topic: "direction, softness and timing of natural light", practice: "photograph one object near a window at two different times", checkpoint: "You can describe which light made the subject clearer.", why: "Light is the fastest photography upgrade." },
+          { title: "Frame with intent", topic: "rule of thirds, background and negative space", practice: "take three versions of one subject from different angles", checkpoint: "Your subject has a clear place in the frame.", why: "Intentional framing removes visual clutter." },
+          { title: "Control the focus", topic: "choosing what the viewer notices first", practice: "make one portrait or object photo with a clean background", checkpoint: "The important detail is sharp and easy to find.", why: "Focus guides attention like a visual headline." },
+          { title: "Edit with restraint", topic: "cropping, exposure and natural color", practice: "edit one photo using only three adjustments", checkpoint: "The photo still looks natural and more intentional.", why: "Small edits teach taste without hiding mistakes." },
+          { title: "Make a mini series", topic: "creating three photos that feel connected", practice: "shoot three images around one theme", checkpoint: "The set shares a clear subject, color or mood.", why: "A series turns isolated shots into a project." },
+          { title: "Share and learn", topic: "asking for specific photo feedback", practice: "post your strongest image and ask which detail draws the eye", checkpoint: "You have one idea for the next shoot.", why: " feedback turns practice into deliberate improvement." }
+        ]
+      },
+      {
+        key: "custom", label: "Something else", hint: "Type any skill", icon: "★",
+        name: "your chosen skill", outcome: "complete a small, shareable first project",
+        milestones: []
+      }
+    ];
+
+    const CUSTOM_MILESTONES = [
+      { title: "Find your starting line", topic: "what a confident beginner should understand first about your skill", practice: "write what you already know, what confuses you and what ‘good’ looks like", checkpoint: "Your starting point and destination are both written down.", why: "Orientation removes the fear of the unknown." },
+      { title: "Learn the core pattern", topic: "the one foundational idea that appears everywhere in your skill", practice: "study one beginner example and copy it slowly", checkpoint: "You can explain the core pattern in plain language.", why: "One pattern gives every future lesson a place to stick." },
+      { title: "Practice deliberately", topic: "turning passive exposure into an active repetition", practice: "complete a tiny exercise and note one mistake without judging it", checkpoint: "You can repeat the exercise with fewer prompts.", why: "Focused repetition is where real skill starts." },
+      { title: "Make a small project", topic: "combining the basics into one personal result", practice: "create the smallest version that still feels meaningfully yours", checkpoint: "You have an artifact, not just notes.", why: "A project reveals gaps more honestly than a quiz." },
+      { title: "Get one useful critique", topic: "asking for feedback that leads to action", practice: "share your work with one person and ask for one improvement", checkpoint: "You have a specific next fix, not vague praise.", why: "Outside perspective accelerates progress." },
+      { title: "Show your first win", topic: "reflecting and choosing the next horizon", practice: "write what got easier, what remains hard and one next question", checkpoint: "You can name a confident next step without starting over.", why: "Reflection turns a first win into a repeatable path." }
+    ];
+
+    const LEVELS = {
+      beginner: { label: "Complete beginner", intro: "Start gently", adapter: "Start with a 5-minute learning log and one no-pressure warm-up." },
+      some: { label: "I know a little", intro: "Skip the obvious", adapter: "Begin with a quick calibration task so you do not repeat what you already know." },
+      returning: { label: "I’m restarting", intro: "Rebuild confidence", adapter: "Begin with a low-stakes warm-up that reactivates what you remember." }
+    };
+
+    const TIME_MODES = {
+      "15": { label: "15 minutes / day", short: "15 min", duration: "10–15 min", sessions: "12 short sessions", note: "micro-sessions" },
+      "30": { label: "30 minutes / day", short: "30 min", duration: "20–30 min", sessions: "10 focused sessions", note: "steady daily rhythm" },
+      "60": { label: "1 hour / day", short: "60 min", duration: "45–60 min", sessions: "7 deeper sessions", note: "faster immersive pace" },
+      "weekend": { label: "Weekend blocks", short: "weekend", duration: "75–90 min", sessions: "6 weekend blocks", note: "weekend deep-work plan" }
+    };
+
+    const STYLE_MODES = {
+      watch: { label: "Watch-first", short: "Video", learn: topic => `Watch one short beginner video about ${topic}.`, practice: milestone => `Pause and copy along: ${milestone.practice}.`, reflect: checkpoint => `Record a 20-second voice note: ${checkpoint}` },
+      read: { label: "Read-first", short: "Guide", learn: topic => `Skim one clear guide about ${topic}; save only the headings.`, practice: milestone => `Follow one worked example, then try it yourself: ${milestone.practice}.`, reflect: checkpoint => `Close the guide and explain from memory: ${checkpoint}` },
+      do: { label: "Hands-on", short: "Practice", learn: topic => `Try a small interactive exercise about ${topic} before reading theory.`, practice: milestone => `Build by trial and error: ${milestone.practice}.`, reflect: checkpoint => `Write one confusion and one fix: ${checkpoint}` },
+      listen: { label: "Listen-first", short: "Audio", learn: topic => `Listen to one short explainer about ${topic} while taking three keywords.`, practice: milestone => `Repeat the idea out loud, then do this: ${milestone.practice}.`, reflect: checkpoint => `Give a 30-second spoken summary: ${checkpoint}` }
+    };
+
+    const BADGES = [
+      { id: "spark", label: "First Spark", hint: "Complete one action", test: s => s.actions >= 1 },
+      { id: "pathfinder", label: "Pathfinder", hint: "Complete one step", test: s => s.steps >= 1 },
+      { id: "halfway", label: "Halfway Star", hint: "Complete three steps", test: s => s.steps >= 3 },
+      { id: "streak3", label: "3-Day Orbit", hint: "Return for three days", test: s => s.streak >= 3 },
+      { id: "finisher", label: "Constellation", hint: "Complete the whole path", test: s => s.allComplete }
+    ];
+
+    const DEMO_LEARNER = { goalKey: "speaking", customGoal: "", level: "beginner", timeMode: "15", styleMode: "watch" };
+
+    function blankState() {
+      return {
+        version: 1,
+        learner: { goalKey: "", customGoal: "", level: "beginner", timeMode: "30", styleMode: "watch" },
+        roadmap: null,
+        completedActions: [],
+        selectedStepId: "",
+        activeDays: [],
+        earnedBadges: [],
+        settings: { highContrast: false }
+      };
+    }
+
+    function clone(value) { return JSON.parse(JSON.stringify(value)); }
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+    function $(selector, root = document) { return root.querySelector(selector); }
+    function $$(selector, root = document) { return Array.from(root.querySelectorAll(selector)); }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return blankState();
+        const parsed = JSON.parse(raw);
+        const base = blankState();
+        return {
+          ...base,
+          ...parsed,
+          learner: { ...base.learner, ...(parsed.learner || {}) },
+          settings: { ...base.settings, ...(parsed.settings || {}) },
+          completedActions: Array.isArray(parsed.completedActions) ? parsed.completedActions : [],
+          activeDays: Array.isArray(parsed.activeDays) ? parsed.activeDays : [],
+          earnedBadges: Array.isArray(parsed.earnedBadges) ? parsed.earnedBadges : []
+        };
+      } catch (error) {
+        console.warn("LUMEN could not load saved state:", error);
+        return blankState();
+      }
+    }
+
+    let state = loadState();
+    let toastTimer = null;
+    let spotlightElement = null;
+
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      catch (error) { console.warn("LUMEN could not save state:", error); }
+    }
+
+    function announce(message) {
+      const node = $("#srAnnouncer");
+      node.textContent = "";
+      window.setTimeout(() => { node.textContent = message; }, 30);
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function getGoal(key) { return GOALS.find(goal => goal.key === key) || GOALS[GOALS.length - 1]; }
+    function getGoalName(learner = state.learner) {
+      const goal = getGoal(learner.goalKey);
+      return learner.goalKey === "custom" && learner.customGoal.trim() ? learner.customGoal.trim() : goal.name;
+    }
+
+    function buildRoadmap(learner) {
+      const goal = getGoal(learner.goalKey);
+      const skillName = getGoalName(learner);
+      const level = LEVELS[learner.level] || LEVELS.beginner;
+      const time = TIME_MODES[learner.timeMode] || TIME_MODES["30"];
+      const style = STYLE_MODES[learner.styleMode] || STYLE_MODES.watch;
+      const baseMilestones = learner.goalKey === "custom" ? CUSTOM_MILESTONES : goal.milestones;
+
+      const steps = baseMilestones.map((milestone, index) => {
+        let title = milestone.title;
+        let topic = milestone.topic;
+        let practice = milestone.practice;
+        let checkpoint = milestone.checkpoint;
+        let why = milestone.why;
+
+        if (index === 0 && learner.level === "some") {
+          title = "Calibrate your baseline";
+          topic = `the core map of ${skillName} and what you already know`;
+          practice = "list three things you can already do and one gap you want to close";
+          checkpoint = "You can name one strength and one precise next gap.";
+          why = "A quick calibration prevents repeating the boring basics.";
+        }
+        if (index === 0 && learner.level === "returning") {
+          title = "Rewarm your foundations";
+          topic = `the essential vocabulary of ${skillName}`;
+          practice = "do one easy review example without aiming for perfection";
+          checkpoint = "You remember enough to take the next step without fear.";
+          why = "Restarting works best when the first win feels safe.";
+        }
+        if (learner.goalKey === "custom") {
+          topic = `${topic} (${skillName})`;
+        }
+
+        const actions = [
+          style.learn(topic),
+          style.practice({ practice }),
+          style.reflect(checkpoint)
+        ];
+        if (index === 0) actions.unshift(level.adapter + " Create a note called “My LUMEN log” and write today’s date.");
+
+        return {
+          id: `step-${index + 1}`,
+          number: index + 1,
+          title,
+          focus: practice,
+          why,
+          duration: time.duration,
+          checkpoint,
+          actions
+        };
+      });
+
+      return {
+        title: `Your path to ${skillName}`,
+        subtitle: `A six-stop constellation for ${level.label.toLowerCase()} · ${time.label} · ${style.label}.`,
+        goalKey: learner.goalKey,
+        goalName: skillName,
+        outcome: learner.goalKey === "custom" ? `make visible progress in ${skillName}` : goal.outcome,
+        pace: time.short,
+        sessions: time.sessions,
+        styleLabel: style.label,
+        levelLabel: level.label,
+        timeLabel: time.label,
+        generatedAt: new Date().toISOString(),
+        steps
+      };
+    }
+
+    function renderGoalCards() {
+      const grid = $("#goalGrid");
+      grid.innerHTML = GOALS.map(goal => `
+        <button class="goal-card" type="button" data-goal="${goal.key}" aria-pressed="false">
+          <span class="goal-icon" aria-hidden="true">${goal.icon}</span>
+          <span class="goal-text"><strong>${escapeHTML(goal.label)}</strong><small>${escapeHTML(goal.hint)}</small></span>
+        </button>
+      `).join("");
+    }
+
+    function syncGoalSelection() {
+      $$(".goal-card").forEach(button => {
+        const active = button.dataset.goal === state.learner.goalKey;
+        button.setAttribute("aria-pressed", String(active));
+      });
+      const customWrap = $("#customGoalWrap");
+      customWrap.hidden = state.learner.goalKey !== "custom";
+      $("#customGoal").value = state.learner.customGoal || "";
+    }
+
+    function syncForm() {
+      syncGoalSelection();
+      const levelInput = $(`input[name="level"][value="${state.learner.level}"]`);
+      if (levelInput) levelInput.checked = true;
+      $("#timeMode").value = state.learner.timeMode;
+      $("#styleMode").value = state.learner.styleMode;
+      $("#formError").hidden = true;
+    }
+
+    function updateLearnerFromForm() {
+      const levelInput = $('input[name="level"]:checked');
+      state.learner.level = levelInput ? levelInput.value : "beginner";
+      state.learner.timeMode = $("#timeMode").value;
+      state.learner.styleMode = $("#styleMode").value;
+      state.learner.customGoal = $("#customGoal").value.trim();
+    }
+
+    function selectGoal(key, focusCustom = false) {
+      state.learner.goalKey = key;
+      syncGoalSelection();
+      $("#formError").hidden = true;
+      if (key === "custom" && focusCustom) $("#customGoal").focus();
+      saveState();
+    }
+
+    function validateLearner(learner) {
+      if (!learner.goalKey) return { valid: false, message: "Choose a learning goal first.", focus: ".goal-card" };
+      if (learner.goalKey === "custom" && !learner.customGoal.trim()) return { valid: false, message: "Type the skill you want to learn.", focus: "#customGoal" };
+      return { valid: true };
+    }
+
+    function showFormError(message, focusSelector) {
+      const error = $("#formError");
+      error.textContent = message;
+      error.hidden = false;
+      announce(message);
+      const target = $(focusSelector);
+      if (target) target.focus({ preventScroll: false });
+    }
+
+    function generateFromForm({ instant = false, learnerOverride = null } = {}) {
+      if (learnerOverride) state.learner = { ...state.learner, ...learnerOverride };
+      else updateLearnerFromForm();
+
+      const validation = validateLearner(state.learner);
+      if (!validation.valid) {
+        showFormError(validation.message, validation.focus);
+        return false;
+      }
+
+      const button = $("#generateButton");
+      const commit = () => {
+        state.roadmap = buildRoadmap(state.learner);
+        state.completedActions = [];
+        state.selectedStepId = state.roadmap.steps[0].id;
+        state.activeDays = [];
+        state.earnedBadges = [];
+        saveState();
+        renderAll();
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+        announce(`Roadmap ready. Six steps generated for ${state.roadmap.goalName}.`);
+        showToast("✦ Your six-step learning constellation is ready.");
+      };
+
+      if (instant) { commit(); return true; }
+      button.disabled = true;
+      button.innerHTML = '<span aria-hidden="true">✦</span> Mapping your constellation…';
+      window.setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = '<span aria-hidden="true">✦</span> Generate my roadmap';
+        commit();
+      }, 620);
+      return true;
+    }
+
+    function isActionDone(stepId, index) { return state.completedActions.includes(`${stepId}:${index}`); }
+    function isStepComplete(step) { return step.actions.every((_, index) => isActionDone(step.id, index)); }
+    function getStats() {
+      if (!state.roadmap) return { totalActions: 0, actions: 0, steps: 0, totalSteps: 0, percent: 0, xp: 0, streak: 0, allComplete: false };
+      const totalActions = state.roadmap.steps.reduce((sum, step) => sum + step.actions.length, 0);
+      const actions = state.completedActions.length;
+      const steps = state.roadmap.steps.filter(isStepComplete).length;
+      const totalSteps = state.roadmap.steps.length;
+      const percent = totalActions ? Math.round((actions / totalActions) * 100) : 0;
+      const streak = calculateStreak();
+      const xp = actions * 25 + steps * 100 + state.earnedBadges.length * 50;
+      const allComplete = totalSteps > 0 && steps === totalSteps;
+      return { totalActions, actions, steps, totalSteps, percent, xp, streak, allComplete };
+    }
+
+    function getCurrentStep() {
+      if (!state.roadmap) return null;
+      return state.roadmap.steps.find(step => !isStepComplete(step)) || state.roadmap.steps[state.roadmap.steps.length - 1];
+    }
+
+    function getSelectedStep() {
+      if (!state.roadmap) return null;
+      return state.roadmap.steps.find(step => step.id === state.selectedStepId) || getCurrentStep();
+    }
+
+    function calculateStreak() {
+      if (!state.activeDays.length) return 0;
+      const set = new Set(state.activeDays);
+      const cursor = new Date();
+      if (!set.has(toDateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+      let streak = 0;
+      while (set.has(toDateKey(cursor))) {
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return streak;
+    }
+
+    function toDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function registerActivity() {
+      const key = toDateKey(new Date());
+      if (!state.activeDays.includes(key)) state.activeDays.push(key);
+      state.activeDays.sort();
+    }
+
+    function awardBadges(stats) {
+      const unlocked = BADGES.filter(badge => badge.test(stats) && !state.earnedBadges.includes(badge.id));
+      unlocked.forEach(badge => state.earnedBadges.push(badge.id));
+      return unlocked;
+    }
+
+    function toggleAction(stepId, index, checked) {
+      if (!state.roadmap) return;
+      const step = state.roadmap.steps.find(item => item.id === stepId);
+      if (!step) return;
+      const key = `${stepId}:${index}`;
+      const wasComplete = isStepComplete(step);
+
+      if (checked) {
+        if (!state.completedActions.includes(key)) state.completedActions.push(key);
+        registerActivity();
+      } else {
+        state.completedActions = state.completedActions.filter(item => item !== key);
+      }
+
+      const nowComplete = isStepComplete(step);
+      const stats = getStats();
+      const unlocked = awardBadges(stats);
+      saveState();
+      renderWorkspace();
+
+      const focusTarget = $$('[data-action-id]').find(input => input.dataset.actionId === key);
+      if (focusTarget) focusTarget.focus({ preventScroll: true });
+
+      if (checked && !wasComplete && nowComplete) {
+        celebrate();
+        showToast(`★ Step complete: ${step.title} · +100 XP`);
+        announce(`Step complete. ${step.title}. Next step is ${getCurrentStep()?.title || "available"}.`);
+      } else if (unlocked.length) {
+        showToast(`✦ Badge unlocked: ${unlocked[0].label}`);
+        announce(`Badge unlocked: ${unlocked[0].label}.`);
+      } else if (checked) {
+        showToast(`Action complete · +25 XP. ${stats.percent}% of your path is lit.`);
+        announce(`Action complete. ${stats.percent}% of your path is lit.`);
+      } else {
+        announce(`Action unchecked. ${stats.percent}% of your path is lit.`);
+      }
+    }
+
+    function selectStep(stepId) {
+      state.selectedStepId = stepId;
+      saveState();
+      renderWorkspace();
+      const detail = $("#stepDetail");
+      if (detail) detail.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    }
+
+    function renderWorkspace() {
+      if (!state.roadmap) return;
+      $("#landing").hidden = true;
+      $("#workspace").hidden = false;
+      $("#workspaceTitle").textContent = state.roadmap.title;
+      $("#workspaceSubtitle").textContent = `${state.roadmap.subtitle} Aim: ${state.roadmap.outcome}.`;
+      document.title = `${state.roadmap.title} — LUMEN`;
+
+      renderNextMove();
+      renderStepList();
+      renderDetail();
+      renderProgress();
+      renderStreak();
+      renderBadges();
+      renderLogic();
+    }
+
+    function renderNextMove() {
+      const step = getCurrentStep();
+      const card = $("#nextMoveCard");
+      const stats = getStats();
+      if (stats.allComplete) {
+        card.classList.add("complete");
+        $("#nextLabel").textContent = "Constellation complete";
+        $("#nextMoveTitle").textContent = "You built a first win. What’s next?";
+        $("#nextMoveText").textContent = `You completed all six steps toward ${state.roadmap.outcome}. Revisit one star or adjust your inputs for a new challenge.`;
+        $("#nextMeta").innerHTML = `<span>${state.roadmap.sessions}</span><span>${stats.xp} XP earned</span><span>${state.earnedBadges.length} rewards</span>`;
+        $("#nextNumber").textContent = "✓";
+        return;
+      }
+      card.classList.remove("complete");
+      const nextAction = step.actions.find((_, index) => !isActionDone(step.id, index)) || step.actions[0];
+      $("#nextLabel").textContent = `Your next move · Step ${step.number} of ${state.roadmap.steps.length}`;
+      $("#nextMoveTitle").textContent = step.title;
+      $("#nextMoveText").textContent = nextAction;
+      $("#nextMeta").innerHTML = `<span>${escapeHTML(step.duration)}</span><span>${escapeHTML(state.roadmap.pace)} pace</span><span>${stats.percent}% complete</span>`;
+      $("#nextNumber").textContent = String(step.number);
+    }
+
+    function renderStepList() {
+      const current = getCurrentStep();
+      const selected = getSelectedStep();
+      $("#stepList").innerHTML = state.roadmap.steps.map(step => {
+        const complete = isStepComplete(step);
+        const isCurrent = current && step.id === current.id;
+        const isSelected = selected && step.id === selected.id;
+        const classes = ["step-item"];
+        if (complete) classes.push("complete");
+        if (isCurrent) classes.push("current");
+        if (isSelected) classes.push("selected");
+        const status = complete ? "Done" : isCurrent ? "Now" : "Next";
+        const nodeText = complete ? "✓" : String(step.number);
+        return `
+          <li class="${classes.join(" ")}">
+            <span class="step-node" aria-hidden="true">${nodeText}</span>
+            <button class="step-card" type="button" data-select-step="${step.id}" aria-current="${isCurrent ? "step" : "false"}" aria-label="Step ${step.number}: ${escapeHTML(step.title)}. Status: ${status}. View actions.">
+              <span><strong>${escapeHTML(step.number)}. ${escapeHTML(step.title)}</strong><small>${escapeHTML(step.focus)}</small></span>
+              <span class="status-chip">${status}</span>
+            </button>
+          </li>`;
+      }).join("");
+    }
+
+    function renderDetail() {
+      const step = getSelectedStep();
+      if (!step) return;
+      const complete = isStepComplete(step);
+      $("#stepDetail").innerHTML = `
+        <div class="detail-step-label">Step ${step.number} · ${complete ? "Complete" : "Action checklist"}</div>
+        <h2 class="detail-title" id="detailTitle">${escapeHTML(step.title)}</h2>
+        <p class="detail-why">${escapeHTML(step.why)}</p>
+        <div class="detail-meta">
+          <span class="chip">◷ ${escapeHTML(step.duration)}</span>
+          <span class="chip">◎ ${step.actions.length} actions</span>
+        </div>
+        <ul class="action-list">
+          ${step.actions.map((action, index) => {
+            const actionId = `${step.id}:${index}`;
+            const checked = isActionDone(step.id, index);
+            return `<li class="action-item"><label><input type="checkbox" data-action-id="${actionId}" data-step-id="${step.id}" data-action-index="${index}" ${checked ? "checked" : ""} /><span>${escapeHTML(action)}</span></label></li>`;
+          }).join("")}
+        </ul>
+        ${complete ? `<div class="detail-complete">✓ Star lit. Your next move has moved forward.</div>` : ""}
+      `;
+    }
+
+    function renderProgress() {
+      const stats = getStats();
+      $("#progressRing").style.setProperty("--progress", String(stats.percent));
+      $("#progressRing").setAttribute("aria-valuenow", String(stats.percent));
+      $("#progressPercent").textContent = `${stats.percent}%`;
+      $("#stepsDone").textContent = `${stats.steps}/${stats.totalSteps}`;
+      $("#xpValue").textContent = String(stats.xp);
+      $("#actionsDone").textContent = String(stats.actions);
+      const message = stats.allComplete
+        ? "Every star is lit. You have a repeatable learning loop."
+        : stats.percent === 0
+          ? "Complete one small action to light the path."
+          : stats.percent < 34
+            ? "Your first star is glowing. Keep the chain alive."
+            : stats.percent < 67
+              ? "The pattern is forming. Your next step is already clear."
+              : "You are close to a shareable first win.";
+      $("#progressMessage").textContent = message;
+    }
+
+    function renderStreak() {
+      const streak = calculateStreak();
+      $("#streakValue").textContent = String(streak);
+      const active = new Set(state.activeDays);
+      const dayNames = ["S", "M", "T", "W", "T", "F", "S"];
+      let html = "";
+      for (let offset = 6; offset >= 0; offset -= 1) {
+        const date = new Date();
+        date.setDate(date.getDate() - offset);
+        const key = toDateKey(date);
+        const isActive = active.has(key);
+        html += `<div class="day ${isActive ? "active" : ""}" aria-label="${date.toDateString()}: ${isActive ? "active" : "no activity"}"><div class="day-dot" aria-hidden="true">${isActive ? "✦" : "·"}</div><span>${dayNames[date.getDay()]}</span></div>`;
+      }
+      $("#weekDots").innerHTML = html;
+      $("#streakNote").textContent = streak === 0
+        ? "Finish one action today to spark your streak."
+        : streak === 1
+          ? "Day one counts. Return tomorrow to keep the orbit going."
+          : `${streak} days in a row. Small returns are compounding.`;
+    }
+
+    function renderBadges() {
+      const stats = getStats();
+      $("#badgeGrid").innerHTML = BADGES.map(badge => {
+        const unlocked = state.earnedBadges.includes(badge.id) || badge.test(stats);
+        return `<div class="badge ${unlocked ? "unlocked" : ""}"><strong>${unlocked ? "✦" : "◇"} ${escapeHTML(badge.label)}</strong>${escapeHTML(badge.hint)}</div>`;
+      }).join("");
+    }
+
+    function renderLogic() {
+      const items = [
+        `Goal: ${state.roadmap.goalName}`,
+        `Starting point: ${state.roadmap.levelLabel}`,
+        `Time: ${state.roadmap.timeLabel}`,
+        `Format: ${state.roadmap.styleLabel}`,
+        `Pace: ${state.roadmap.sessions}`
+      ];
+      $("#logicList").innerHTML = items.map(item => `<div class="logic-item">${escapeHTML(item)}</div>`).join("");
+    }
+
+    function renderLanding() {
+      $("#workspace").hidden = true;
+      $("#landing").hidden = false;
+      syncForm();
+      document.title = "LUMEN — AI Skill Constellation";
+    }
+
+    function renderAll() {
+      applySettings();
+      if (state.roadmap) renderWorkspace();
+      else renderLanding();
+    }
+
+    function applySettings() {
+      document.body.classList.toggle("high-contrast", Boolean(state.settings.highContrast));
+      const toggle = $("#contrastToggle");
+      toggle.setAttribute("aria-pressed", String(Boolean(state.settings.highContrast)));
+      $("#contrastText").textContent = state.settings.highContrast ? "Standard view" : "High contrast";
+    }
+
+    function showLandingForEditing() {
+      renderLanding();
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      announce("Adjust your learning inputs, then generate a new roadmap.");
+    }
+
+    function jumpToNextAction() {
+      const step = getCurrentStep();
+      if (!step) return;
+      state.selectedStepId = step.id;
+      saveState();
+      renderWorkspace();
+      const unchecked = $$('[data-action-id]').find(input => !input.checked);
+      const target = unchecked || $("#stepDetail");
+      target.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+      if (unchecked) window.setTimeout(() => unchecked.focus({ preventScroll: true }), prefersReducedMotion ? 0 : 350);
+      highlightElement($("#nextMoveCard"));
+    }
+
+    function highlightElement(element, duration = 1400) {
+      if (!element) return;
+      element.classList.add("demo-spotlight");
+      window.setTimeout(() => element.classList.remove("demo-spotlight"), duration);
+    }
+
+    function celebrate() {
+      if (prefersReducedMotion) return;
+      const container = $("#celebration");
+      const colors = ["#8df3c8", "#ffd47e", "#8eb2ff", "#ffffff"];
+      for (let i = 0; i < 28; i += 1) {
+        const spark = document.createElement("span");
+        spark.className = "spark";
+        spark.style.left = `${45 + Math.random() * 10}%`;
+        spark.style.top = `${48 + Math.random() * 8}%`;
+        spark.style.background = colors[i % colors.length];
+        spark.style.setProperty("--tx", `${(Math.random() - .5) * 520}px`);
+        spark.style.setProperty("--ty", `${(Math.random() - .65) * 420}px`);
+        spark.style.animationDelay = `${Math.random() * 80}ms`;
+        container.appendChild(spark);
+        window.setTimeout(() => spark.remove(), 1100);
+      }
+    }
+
+    // ---------- Guided 60-second demo ----------
+    const DEMO_BEATS = [
+      {
+        seconds: 6,
+        title: "0:00 — The learner’s problem",
+        caption: "A learner has a goal but too many tabs, tutorials and choices. LUMEN starts with one simple question.",
+        target: "#problemCallout",
+        run: () => {
+          state = blankState();
+          state.settings.highContrast = Boolean(demo.savedState?.settings?.highContrast);
+          renderAll();
+        }
+      },
+      {
+        seconds: 7,
+        title: "0:06 — Pick one clear goal",
+        caption: "For the demo, we choose ‘Speak confidently’. Goal selection takes one tap, not a long onboarding form.",
+        target: '.goal-card[data-goal="speaking"]',
+        run: () => { selectGoal("speaking"); }
+      },
+      {
+        seconds: 6,
+        title: "0:13 — Meet the learner where they are",
+        caption: "A complete beginner with 15 minutes a day and video-first learning. The path adapts to real life.",
+        target: "#levelRow",
+        run: () => {
+          state.learner = { ...state.learner, ...DEMO_LEARNER };
+          syncForm();
+          saveState();
+        }
+      },
+      {
+        seconds: 8,
+        title: "0:19 — Generate the roadmap",
+        caption: "The local Path Engine instantly creates six milestones, concrete actions and a realistic pace — no API key needed.",
+        target: "#generateButton",
+        run: () => {
+          const ok = generateFromForm({ instant: true, learnerOverride: DEMO_LEARNER });
+          if (ok) highlightElement($("#workspaceTitle"), 1800);
+        }
+      },
+      {
+        seconds: 9,
+        title: "0:27 — Make progress obvious",
+        caption: "The constellation shows Done, Now and Next at a glance. The learner can select any star without getting lost.",
+        target: "#constellation",
+        run: () => { highlightElement($("#stepList .step-item.current")); }
+      },
+      {
+        seconds: 8,
+        title: "0:36 — Show only one next action",
+        caption: "The glowing card answers ‘what exactly should I do now?’ with a single action and a time estimate.",
+        target: "#nextMoveCard",
+        run: () => {
+          const current = getCurrentStep();
+          if (current) { state.selectedStepId = current.id; renderWorkspace(); }
+        }
+      },
+      {
+        seconds: 8,
+        title: "0:44 — Turn confusion into action",
+        caption: "Completing the first star lights progress, awards XP and advances the recommended next move automatically.",
+        target: "#progressCard",
+        run: () => {
+          const first = state.roadmap?.steps[0];
+          if (!first) return;
+          first.actions.forEach((_, index) => {
+            const key = `${first.id}:${index}`;
+            if (!state.completedActions.includes(key)) state.completedActions.push(key);
+          });
+          registerActivity();
+          const stats = getStats();
+          awardBadges(stats);
+          state.selectedStepId = state.roadmap.steps[1].id;
+          saveState();
+          renderWorkspace();
+          celebrate();
+        }
+      },
+      {
+        seconds: 8,
+        title: "0:52 — The learner is not lost",
+        caption: "In 60 seconds: a goal became a personalized path, a finished first step, visible progress and a confident next action.",
+        target: "#nextMoveCard",
+        run: () => {
+          const firstIncomplete = state.roadmap?.steps.find(step => !isStepComplete(step));
+          if (firstIncomplete) state.selectedStepId = firstIncomplete.id;
+          saveState();
+          renderWorkspace();
+        }
+      }
+    ];
+
+    const demo = {
+      running: false,
+      paused: false,
+      index: -1,
+      remaining: 0,
+      elapsed: 0,
+      timer: null,
+      savedState: null,
+      total: DEMO_BEATS.reduce((sum, beat) => sum + beat.seconds, 0)
+    };
+
+    function startDemo() {
+      stopDemoTimer();
+      demo.savedState = clone(state);
+      demo.running = true;
+      demo.paused = false;
+      demo.index = -1;
+      demo.elapsed = 0;
+      document.body.classList.add("demo-active");
+      $("#demoPanel").hidden = false;
+      $("#demoOwnPath").hidden = true;
+      $("#demoPause").hidden = false;
+      $("#demoNext").hidden = false;
+      $("#demoButton").setAttribute("aria-pressed", "true");
+      nextDemoBeat();
+    }
+
+    function nextDemoBeat() {
+      if (!demo.running) return;
+      demo.index += 1;
+      if (demo.index >= DEMO_BEATS.length) { finishDemo(); return; }
+      const beat = DEMO_BEATS[demo.index];
+      demo.remaining = beat.seconds;
+      try { beat.run(); }
+      catch (error) { console.warn("Demo beat error:", error); }
+      updateDemoPanel(beat);
+      window.requestAnimationFrame(() => setDemoTarget(beat.target));
+      startDemoTimer();
+    }
+
+    function startDemoTimer() {
+      stopDemoTimer();
+      demo.timer = window.setInterval(() => {
+        if (!demo.running || demo.paused) return;
+        demo.remaining -= 1;
+        demo.elapsed += 1;
+        updateDemoTimer();
+        if (demo.remaining <= 0) nextDemoBeat();
+      }, 1000);
+    }
+
+    function stopDemoTimer() {
+      if (demo.timer) window.clearInterval(demo.timer);
+      demo.timer = null;
+    }
+
+    function updateDemoPanel(beat) {
+      $("#demoKicker").textContent = `Beat ${demo.index + 1} of ${DEMO_BEATS.length} · ${beat.seconds}s`;
+      $("#demoTitle").textContent = beat.title;
+      $("#demoCaption").textContent = beat.caption;
+      updateDemoTimer();
+    }
+
+    function updateDemoTimer() {
+      const left = Math.max(0, demo.total - demo.elapsed);
+      const minutes = Math.floor(left / 60);
+      const seconds = String(left % 60).padStart(2, "0");
+      $("#demoTimer").textContent = `${minutes}:${seconds}`;
+      $("#demoProgressFill").style.width = `${Math.min(100, (demo.elapsed / demo.total) * 100)}%`;
+    }
+
+    function setDemoTarget(selector) {
+      clearDemoTarget();
+      const target = $(selector);
+      if (!target) return;
+      spotlightElement = target;
+      target.classList.add("demo-spotlight");
+      target.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    }
+
+    function clearDemoTarget() {
+      if (spotlightElement) spotlightElement.classList.remove("demo-spotlight");
+      spotlightElement = null;
+    }
+
+    function toggleDemoPause() {
+      if (!demo.running) return;
+      demo.paused = !demo.paused;
+      $("#demoPause").textContent = demo.paused ? "Resume" : "Pause";
+      $("#demoPause").setAttribute("aria-pressed", String(demo.paused));
+      announce(demo.paused ? "Demo paused." : "Demo resumed.");
+    }
+
+    function finishDemo() {
+      stopDemoTimer();
+      demo.running = false;
+      demo.elapsed = demo.total;
+      updateDemoTimer();
+      clearDemoTarget();
+      $("#demoKicker").textContent = "Demo complete · exactly 60 seconds";
+      $("#demoTitle").textContent = "From “where do I start?” to a confident next step.";
+      $("#demoCaption").textContent = "The learner has a personalized path, one completed milestone, visible progress, XP, a streak and another clear action waiting.";
+      $("#demoPause").hidden = true;
+      $("#demoNext").hidden = true;
+      $("#demoOwnPath").hidden = false;
+      $("#demoOwnPath").focus({ preventScroll: true });
+      $("#demoButton").removeAttribute("aria-pressed");
+      announce("The 60 second demo is complete. Build your own path or exit.");
+    }
+
+    function exitDemo({ restore = true } = {}) {
+      stopDemoTimer();
+      demo.running = false;
+      demo.paused = false;
+      clearDemoTarget();
+      document.body.classList.remove("demo-active");
+      $("#demoPanel").hidden = true;
+      $("#demoButton").removeAttribute("aria-pressed");
+      if (restore && demo.savedState) {
+        state = demo.savedState;
+        saveState();
+      }
+      renderAll();
+    }
+
+    function buildOwnPathAfterDemo() {
+      const highContrast = Boolean(state.settings.highContrast);
+      state = blankState();
+      state.settings.highContrast = highContrast;
+      saveState();
+      exitDemo({ restore: false });
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      announce("Start by choosing your own learning goal.");
+    }
+
+    // ---------- Events ----------
+    function bindEvents() {
+      $("#goalGrid").addEventListener("click", event => {
+        const button = event.target.closest("[data-goal]");
+        if (button) selectGoal(button.dataset.goal, true);
+      });
+      $("#setupForm").addEventListener("submit", event => { event.preventDefault(); generateFromForm(); });
+      $("#sampleButton").addEventListener("click", () => {
+        selectGoal("data");
+        state.learner = { ...state.learner, goalKey: "data", customGoal: "", level: "beginner", timeMode: "15", styleMode: "read" };
+        syncForm();
+        generateFromForm({ instant: true, learnerOverride: state.learner });
+      });
+      $("#contrastToggle").addEventListener("click", () => {
+        state.settings.highContrast = !state.settings.highContrast;
+        saveState();
+        applySettings();
+        announce(state.settings.highContrast ? "High contrast mode enabled." : "Standard color mode enabled.");
+      });
+      $("#resetButton").addEventListener("click", () => {
+        const confirmed = window.confirm("Clear your saved roadmap and progress, then start again?");
+        if (!confirmed) return;
+        const highContrast = Boolean(state.settings.highContrast);
+        state = blankState();
+        state.settings.highContrast = highContrast;
+        saveState();
+        renderAll();
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+        showToast("Prototype reset. Start with a fresh goal.");
+      });
+      $("#brandHome").addEventListener("click", event => {
+        event.preventDefault();
+        if (demo.running) exitDemo();
+        showLandingForEditing();
+      });
+      $("#newPathButton").addEventListener("click", showLandingForEditing);
+      $("#jumpNextButton").addEventListener("click", jumpToNextAction);
+
+      $("#stepList").addEventListener("click", event => {
+        const button = event.target.closest("[data-select-step]");
+        if (button) selectStep(button.dataset.selectStep);
+      });
+      $("#stepDetail").addEventListener("change", event => {
+        const input = event.target.closest("[data-action-id]");
+        if (!input) return;
+        toggleAction(input.dataset.stepId, Number(input.dataset.actionIndex), input.checked);
+      });
+
+      $("#demoButton").addEventListener("click", startDemo);
+      $("#demoPause").addEventListener("click", toggleDemoPause);
+      $("#demoNext").addEventListener("click", () => {
+        if (!demo.running) return;
+        demo.elapsed += Math.max(0, demo.remaining);
+        demo.remaining = 0;
+        nextDemoBeat();
+      });
+      $("#demoExit").addEventListener("click", () => exitDemo());
+      $("#demoOwnPath").addEventListener("click", buildOwnPathAfterDemo);
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && demo.running) exitDemo();
+        if (event.code === "Space" && demo.running && event.target === document.body) {
+          event.preventDefault();
+          toggleDemoPause();
+        }
+      });
+    }
+
+    function init() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("reset")) {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (error) { console.warn(error); }
+        state = blankState();
+      }
+      renderGoalCards();
+      bindEvents();
+      renderAll();
+      if (params.get("demo") === "1") window.setTimeout(startDemo, 700);
+    }
+
+    init();
+  </script>
+</body>
+</html>
